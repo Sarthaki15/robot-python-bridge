@@ -56,7 +56,7 @@ pip show websocket-client
   - Folder: `/root`
 - Then click **Save**.
 
-GitHub Pages will generate a URL similar to:
+GitHub Pages will generate a URL 
 
 ```
 https://sarthaki15.github.io/robot-python-bridge/
@@ -72,14 +72,14 @@ Close all Chrome windows and start Chrome with remote debugging enabled on port 
 & "<PATH_TO_CHROME.EXE>" `
   --remote-debugging-port=9222 `
   --user-data-dir="<USER_DATA_DIRECTORY>" `
-  "https://sarthaki15.github.io/robot-python-bridge/"
+  "<WEBPAGE_URL>"
 ```
 
 Where:
 - `<PATH_TO_CHROME.EXE>` = path to your Chrome executable
 - `9222` = remote debugging port used by the Python script
 - `<USER_DATA_DIRECTORY>` = separate Chrome profile directory for CDP
-- `<ROBOT_WEBPAGE_URL>` = URL of the robot webpage
+- `<WEBPAGE_URL>` = URL of the robot webpage
 
 ### 5. Open the hosted webpage
 
