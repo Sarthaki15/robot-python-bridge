@@ -1,86 +1,107 @@
-# **Overview:** 
+## Overview
 
-Bridges a fully static, publicly hosted Three.js app to a local Python script in real time, using the Chrome DevTools Protocol (CDP). The hosting stays 100% static — the bridge only talks to the already-running tab, it never changes how the page is deployed. 
+Bridges a fully static, publicly hosted Three.js app to a local Python script in real time, using the Chrome DevTools Protocol (CDP). The hosting stays 100% static — the bridge only talks to the already-running tab, it never changes how the page is deployed.
 
-## **What it does** 
+## What it does
 
-- **Reads live state** — the robot's x, z, and rotationY — streamed continuously from the browser to Python as they change, not by polling or screenshotting. 
+- **Reads live state** — the robot's `x`, `z`, and `rotationY` — streamed continuously from the browser to Python as they change, not by polling or screenshotting.
+- **Writes into the page** — Python drives the robot by dispatching real `keyDown`/`keyUp` events (`ArrowUp`, `ArrowLeft`, `ArrowRight`), so the app reacts exactly as if a person were holding the arrow keys.
 
-- **Writes into the page** — Python drives the robot by dispatching real keyDown/keyUp events (ArrowUp, ArrowLeft, ArrowRight), so the app reacts exactly as if a person were holding the arrow keys. 
+## Files
 
-## **Files** 
+- `index.html` - Static Three.js robot webpage.
+- `bridge_script.py` - Python script (bridge) that connects to Chrome, sends commands, and reads robot state.
 
-- index.html - Static Three.js robot webpage. 
+## Requirements
 
-- bridge_script.py - Python script (bridge) that connects to Chrome, sends 0.commands, and reads robot state. 
+- **Python 3** - Required to run the bridge script
+- **Google Chrome** - with remote debugging enabled on port 9222
+- **websocket-client Python package** - to create the WebSocket connection to Chrome's DevTools Protocol.
 
-## **Requirements** 
+## How to Run
 
-- Python 3 - Required to run the bridge script 
+### 1. Install Python
 
-- Google Chrome - with remote debugging enabled on port 9222 
+After installation, open Command Prompt and check:
 
-- websocket-client Python package - to create the WebSocket connection to Chrome's DevTools Protocol. 
+```bash
+python --version
+```
 
-# **How to Run:** 
+You should see the installed Python version.
 
-1. Install Python: 
+### 2. Install the required Python package
 
-After installation, open Command Prompt and check: 
+Open Command Prompt in the project folder and run:
 
-python --version You should see the installed Python version. 
+```bash
+pip install websocket-client
+```
 
-2. Install the required Python package: 
+Verify the package is installed:
 
-   - Open Command Prompt in the project folder and run: pip install websocket-client 
+```bash
+pip show websocket-client
+```
 
-Verify the package is installed: pip show websocket-client 
+### 3. Host the static webpage
 
-3. Host the static webpage: 
+- Create a new GitHub repository for the project
+- Add your project files: `index.html`
+- Open your GitHub repository
+- Go to: **Settings → Pages**
+- Under **Build and deployment**:
+  - Source: `Deploy from a branch`
+  - Branch: `main`
+  - Folder: `/root`
+- Then click **Save**.
 
-Create a new GitHub repository for the project Add your project files: index.html 
+GitHub Pages will generate a URL similar to:
 
-Open your GitHub repository Go to: Settings→ Pages Under Build and deployment: Source: Deploy from a branch Branch: main Folder: /root Then click Save. GitHub Pages will generate a URL similar to: https://<your-username>.github.io/<repo_name>/ Open that URL and confirm that the robot webpage loads correctly. 
+```
+https://<your-username>.github.io/<repo_name>/
+```
 
-4. Start Chrome with remote debugging: 
+Open that URL and confirm that the robot webpage loads correctly.
 
-Close all Chrome windows and start Chrome with remote debugging enabled on port 9222: 
+### 4. Start Chrome with remote debugging
 
-- & "<PATH_TO_CHROME.EXE>" ` 
+Close all Chrome windows and start Chrome with remote debugging enabled on port 9222:
 
-- --remote-debugging-port=9222 ` 
+```powershell
+& "<PATH_TO_CHROME.EXE>" `
+  --remote-debugging-port=9222 `
+  --user-data-dir="<USER_DATA_DIRECTORY>" `
+  "<WEBPAGE_URL>"
+```
 
---user-data-dir="<USER_DATA_DIRECTORY>" ` 
+Where:
+- `<PATH_TO_CHROME.EXE>` = path to your Chrome executable
+- `9222` = remote debugging port used by the Python script
+- `<USER_DATA_DIRECTORY>` = separate Chrome profile directory for CDP
+- `<ROBOT_WEBPAGE_URL>` = URL of the robot webpage
 
-"<WEBPAGE_URL>" 
+### 5. Open the hosted webpage
 
-Where: 
+In that new Chrome window, open your GitHub Pages URL and keep that tab open.
 
-<PATH_TO_CHROME.EXE> = path to your Chrome executable 
+### 6. Run the Python bridge from VS Code
 
-9222 = remote debugging port used by the Python script 
+Open VS Code: **Terminal → New Terminal**
 
-<USER_DATA_DIRECTORY> = separate Chrome profile directory for CDP 
+Make sure the terminal is in the project folder, then run:
 
-<ROBOT_WEBPAGE_URL> = URL of the robot webpage 
+```bash
+python bridge_script.py
+```
 
-5. Open the hosted webpage: 
+## Why I chose Chrome DevTools Protocol (CDP)
 
-In that new Chrome window, open your GitHub Pages URL and keep that tab open. 
+I chose CDP because it provides a direct, low-latency interface between local Python and a running Chrome tab, without requiring a backend server or browser extension.
 
-6. Run the Python bridge from VS Code: 
+Using CDP, I implemented a two-way real-time bridge:
 
-Open VSCode : Terminal → New Terminal 
+- **Python → Robot**: `Input.dispatchKeyEvent` sends keyboard commands.
+- **Robot → Python**: An injected JavaScript listener captures `window.postMessage()` state updates and forwards them through `Runtime.addBinding`.
 
-Make sure the terminal is in the project folder, then run: python bridge_script.py 
-
-# **Why I chose Chrome DevTools Protocol (CDP)** 
-
-I chose CDP because it provides a direct, low-latency interface between local Python and a running Chrome tab, without requiring a backend server or browser extension. Using CDP, I implemented a two-way real-time bridge: 
-
-Python → Robot: Input.dispatchKeyEvent sends keyboard commands. 
-
-Robot → Python: An injected JavaScript listener captures window.postMessage() state updates and forwards them through Runtime.addBinding. 
-
-This keeps the robot application static and publicly hosted while Python handles browser control and state monitoring locally. The main trade-off is that Chrome must run with remote debugging enabled, so the CDP endpoint should only be used in a controlled environment. 
-
+This keeps the robot application static and publicly hosted while Python handles browser control and state monitoring locally. The main trade-off is that Chrome must run with remote debugging enabled, so the CDP endpoint should only be used in a controlled environment.
