@@ -2,9 +2,7 @@ import json
 import sys
 import time
 import urllib.request
-
 import websocket
-
 
 CDP_URL = "http://localhost:9222/json"
 ROBOT_URL = "https://sarthaki15.github.io/robot-python-bridge/"
@@ -12,7 +10,6 @@ ROBOT_URL = "https://sarthaki15.github.io/robot-python-bridge/"
 MOVE_TIME = 1.5
 STATE_UPDATE_INTERVAL = 0.25
 MAX_STOPPED_READINGS = 3
-
 
 # Store the latest robot information
 state_info = {
@@ -25,7 +22,6 @@ state_info = {
     "last_update": 0,
     "stopped_count": 0
 }
-
 
 # Find the hosted robot tab in Chrome
 def get_robot_tab():
@@ -40,7 +36,6 @@ def get_robot_tab():
             return tab
 
     return None
-
 
 # Process robot-state messages received from the webpage
 def process_message(message):
@@ -88,7 +83,6 @@ def process_message(message):
     except (KeyError, TypeError, json.JSONDecodeError):
         pass
 
-
 # Send a CDP command and wait for its response
 def send_command(ws, command_id, method, params=None):
 
@@ -106,7 +100,6 @@ def send_command(ws, command_id, method, params=None):
 
         response = json.loads(ws.recv())
 
-        # CDP can send events while we are waiting
         if response.get("method") == "Runtime.bindingCalled":
             process_message(response)
             continue
@@ -120,7 +113,6 @@ def send_command(ws, command_id, method, params=None):
 
             return response
 
-
 # Print the current robot state
 def print_state(state):
     print(
@@ -129,7 +121,6 @@ def print_state(state):
         f"z={state['z']:7.2f}  "
         f"rot={state['rotationY']:6.2f}"
     )
-
 
 # Print movement/status information
 def print_header(movement, action, key, status):
@@ -223,7 +214,6 @@ def move_robot(
 
     return command_id
 
-
 def main():
 
     print("Python script started")
@@ -253,7 +243,6 @@ def main():
 
     try:
 
-        # Enable Runtime events
         command_id += 1
 
         response = send_command(
@@ -438,7 +427,6 @@ def main():
         ws.close()
 
         print("Connection closed.")
-
 
 if __name__ == "__main__":
     main()
