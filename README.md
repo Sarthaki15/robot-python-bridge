@@ -59,7 +59,7 @@ pip show websocket-client
 GitHub Pages will generate a URL similar to:
 
 ```
-https://<your-username>.github.io/<repo_name>/
+https://sarthaki15.github.io/robot-python-bridge/
 ```
 
 Open that URL and confirm that the robot webpage loads correctly.
@@ -72,7 +72,7 @@ Close all Chrome windows and start Chrome with remote debugging enabled on port 
 & "<PATH_TO_CHROME.EXE>" `
   --remote-debugging-port=9222 `
   --user-data-dir="<USER_DATA_DIRECTORY>" `
-  "<WEBPAGE_URL>"
+  "https://sarthaki15.github.io/robot-python-bridge/"
 ```
 
 Where:
@@ -84,6 +84,9 @@ Where:
 ### 5. Open the hosted webpage
 
 In that new Chrome window, open your GitHub Pages URL and keep that tab open.
+```bash
+https://sarthaki15.github.io/robot-python-bridge/
+```
 
 ### 6. Run the Python bridge from VS Code
 
